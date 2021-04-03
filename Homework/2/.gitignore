@@ -1,0 +1,9 @@
+/elasticsearch/
+/grafana/
+/influxdb/
+/logs/
+/mariadb
+/mongo/
+/nginx/wordpress.conf
+/strapi/
+/wordpress/

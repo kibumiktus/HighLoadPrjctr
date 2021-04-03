@@ -1,0 +1,128 @@
+version: "3"
+
+services: 
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+      - "8090:8090"
+    env_file:
+      - './env.influxdb'
+    volumes:
+      # Data persistency
+      # sudo mkdir -p /srv/docker/influxdb/data
+      - ./influxdb/data:/var/lib/influxdb
+
+  telegraf:
+    image: telegraf:latest
+    container_name: telegraf
+    links:
+      - influxdb
+      - elasticsearch
+      - nginx
+      - mysql
+      - mongo
+      - wordpress
+      - strapi
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/php-fpm.sock:/var/run/php-fpm.sock
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "4000:3000"
+    env_file:
+      - './env.grafana'
+    user: "0"
+    links:
+      - influxdb
+    volumes:
+      # Data persistency
+      # sudo mkdir -p /srv/docker/grafana/data; chown 472:472 /srv/docker/grafana/data
+      - ./grafana/data:/var/lib/grafana
+      
+
+  strapi:
+    image: strapi/strapi
+    container_name: strapi
+    # restart: unless-stopped
+    env_file: ./env.strapi
+    links:
+      - mongo
+
+    volumes:
+      - ./strapi/data/app:/srv/app
+    ports:
+      - "1337:1337"
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    # restart: unless-stopped
+    env_file: ./env.mongo
+    volumes:
+      - ./mongo/data/db:/data/db
+    ports:
+      - "27017:27017"
+
+  nginx:
+    image: nginx:latest
+    ports:
+        - '8080:80'
+    volumes:
+        - ./nginx:/etc/nginx/conf.d
+        - ./logs/nginx:/var/log/nginx
+        - ./wordpress/data5.7:/var/www/html
+        - /var/run/php-fpm.sock:/var/run/php-fpm.sock
+    links:
+        - wordpress
+    restart: always
+   
+  wordpress:
+    # image: wordpress:4.7.1-php7.0-fpm
+    build: ./wordpress
+    ports:
+        - '9000:9000'
+    volumes:
+        - ./wordpress/data:/var/www/html
+        # - /var/run/php-fpm.sock:/var/run/php-fpm.sock
+        # - ./config/php-fpm.d:/usr/local/etc/php-fpm.d
+    environment:
+        - WORDPRESS_DB_NAME=wpdb
+        - WORDPRESS_TABLE_PREFIX=wp_
+        - WORDPRESS_DB_HOST=mysql
+        - WORDPRESS_DB_PASSWORD=aqwe123
+    links:
+        - mysql
+    restart: always
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mariadb
+    ports:
+        - '3306:3306'
+    volumes:
+        - ./mariadb/data:/var/lib/mysql
+    environment:
+        - MYSQL_ROOT_PASSWORD=aqwe123
+    restart: always
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+    container_name: elasticsearch
+    environment:
+        - discovery.type=single-node
+    volumes:
+      - ./elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+
+volumes:
+  strapidata:

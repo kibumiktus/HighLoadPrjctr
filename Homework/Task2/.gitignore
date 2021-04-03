@@ -1,9 +1,9 @@
-/elasticsearch/
+/elasticsearch/nodes/
 /grafana/
 /influxdb/
 /logs/
 /mariadb
 /mongo/
-/nginx/wordpress.conf
+# /nginx/wordpress.conf
 /strapi/
-/wordpress/
+/wordpress/data

@@ -25,9 +25,12 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task Post(Info info)
+        public async Task Post()
         {
-            info.Created = DateTime.Now;
+            var info = new Info
+            {
+                Created = DateTime.Now
+            };
             await _infoRepository.Store(info);
         }
     }

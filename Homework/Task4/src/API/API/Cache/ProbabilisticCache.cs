@@ -5,7 +5,7 @@ using System;
 
 namespace API.Cache
 {
-    public class PropabilisticCache : ICache
+    public class ProbabilisticCache : ICache
     {
         private IMemoryCache _cache;
         private CacheSettings _cacheSettings;
@@ -15,7 +15,7 @@ namespace API.Cache
             public DateTime CacheEndOfLife { get; set; }
         }
 
-        public PropabilisticCache(IMemoryCache cache, CacheSettings cacheSettings)
+        public ProbabilisticCache(IMemoryCache cache, CacheSettings cacheSettings)
         {
             _cache = cache;
             _cacheSettings = cacheSettings;
@@ -52,7 +52,7 @@ namespace API.Cache
             if (timeToEnd.TotalSeconds > 60)
                 return wrapper.Value;
             var propabilityService = PropabilityService.GetInstance(1M / timeToEnd.Seconds);
-            return (propabilityService.RentValue()) ? null : false;
+            return (propabilityService.RentValue()) ? null : wrapper.Value;
         }
     }
 }

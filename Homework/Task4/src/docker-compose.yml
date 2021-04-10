@@ -9,14 +9,17 @@ services:
             - "5432:5432"
 
     api:
-        build: ./API/API
+        build: ./API
         environment:
             - WORDPRESS_DB_NAME=wpdb
             - WORDPRESS_TABLE_PREFIX=wp_
             - WORDPRESS_DB_HOST=mysql
-            - WORDPRESS_DB_PASSWORD=aqwe123
+            - DatabaseSettings.ConnectionString=User ID=postgres;Password=example;Host=db;Port=5432;Database=myDataBase;Connection Lifetime=0;
+        ports:
+            - 45321:80
         restart: always
-        
+        depends_on:
+            - db
 
     adminer:
         image: adminer

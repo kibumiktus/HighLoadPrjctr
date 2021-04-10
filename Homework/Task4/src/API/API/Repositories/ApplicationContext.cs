@@ -10,13 +10,12 @@ namespace API.Repositories
         public ApplicationContext(DatabaseSettings databaseSettings)
         {
             DatabaseSettings = databaseSettings;
+            Database.EnsureCreated();
+
         }
 
         public DbSet<Info> Info { get; set; }
-        public ApplicationContext()
-        {
-            Database.EnsureCreated();
-        }
+     
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(DatabaseSettings.ConnectionString);

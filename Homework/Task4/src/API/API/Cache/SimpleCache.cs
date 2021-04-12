@@ -46,8 +46,13 @@ namespace API.Cache
         {
             if (!_cache.TryGetValue(key, out object storedValue))
                 return null;
-            else return storedValue;
+            var wrapper = (Wrapper<object>)storedValue;
+            if (wrapper.CacheEndOfLife < DateTime.Now)
+            {
+                return null;
+            }
 
+            return wrapper.Value;
         }
     }
 }

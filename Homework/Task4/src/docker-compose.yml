@@ -13,8 +13,9 @@ services:
         environment:
             - WORDPRESS_DB_NAME=wpdb
             - WORDPRESS_TABLE_PREFIX=wp_
-            # - CacheSettings:CacheStrategy=Empty
-            - CacheSettings:CacheStrategy=Probabilistic
+            # - CacheSettings:CacheStrategy=Probabilistic
+            - CacheSettings:CacheStrategy=Simple
+            - CacheSettings:CacheLifeTimeInMinutes=2
             - DatabaseSettings.ConnectionString=User ID=postgres;Password=example;Host=db;Port=5432;Database=myDataBase;Connection Lifetime=0;
         ports:
             - 45321:80
@@ -33,7 +34,7 @@ services:
     siege_get:
         build: ./Siege
         restart: always
-        command: -c100 -r2000 api/info
+        command: -c500 -r3000 api/info
         depends_on:
             - api
 
@@ -47,7 +48,7 @@ services:
     prometheus:
         image: prom/prometheus
         ports: 
-            - 9090:9090
+            - 900:9090
         volumes:
             - ./prometheus/config:/etc/prometheus
         depends_on:

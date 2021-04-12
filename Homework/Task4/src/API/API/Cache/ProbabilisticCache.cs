@@ -51,7 +51,8 @@ namespace API.Cache
             var timeToEnd = wrapper.CacheEndOfLife - DateTime.Now;
             if (timeToEnd.TotalSeconds > 60)
                 return wrapper.Value;
-            var propabilityService = PropabilityService.GetInstance(1M / timeToEnd.Seconds);
+            var propabilityPartion = 1M / TimeSpan.TicksPerMinute;
+            var propabilityService = PropabilityService.GetInstance(timeToEnd.Ticks * propabilityPartion);
             return (propabilityService.RentValue()) ? null : wrapper.Value;
         }
     }

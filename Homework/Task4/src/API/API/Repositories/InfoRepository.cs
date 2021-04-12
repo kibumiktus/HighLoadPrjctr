@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using API.Cache;
 using System;
+using System.Threading;
 
 namespace API.Repositories
 {
@@ -37,11 +38,12 @@ namespace API.Repositories
                 if ((cached = _cache["Count"]) != null)
                     return (int)cached;
                 ApplicationContext applicationContext = _serviceProvider.GetService<ApplicationContext>();
-
+                
                 var count = applicationContext.Info.Count();
                 _cache.Add("Count", count);
                 return count;
             }
+            
         }
 
         private object _getLastLocker = new object();

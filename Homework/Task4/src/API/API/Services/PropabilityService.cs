@@ -16,7 +16,7 @@ namespace API.Services
             return _services[propability];
         }
         public decimal Propability { get; private set; }
-        public int Length { get; set; } = 100;
+        public int Length { get; set; } = 10_000;
 
         private Queue<bool> _queue;
 
@@ -29,6 +29,7 @@ namespace API.Services
         public void AppendPropabilityVariants()
         {
             var pool = ArrayPool<bool>.Shared;
+            var r = new Random();
             var various = pool.Rent(Length);
             for (int i = 0; i < Propability * Length; i++)
             {
@@ -38,7 +39,7 @@ namespace API.Services
             {
                 various[i] = false;
             }
-            foreach (var item in various.Take(Length).OrderBy(v => Guid.NewGuid()))
+            foreach (var item in various.Take(Length).OrderBy(v => r.Next()))
             {
                 _queue.Enqueue(item);
             }

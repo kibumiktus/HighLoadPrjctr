@@ -4,7 +4,7 @@ Homework By Mykhailo Prozorov
 1. [Task 1](Homework/Task1/Task1.md)
 2. [Task 2](Homework/Task2/)
 3. [Task 3](Homework/Task3/Task3.md)
-4. Task 4
+4. [Task 4](Homework/Task4/Task4.md)
 5. Task 5
 6. Task 6
 7. Task 7

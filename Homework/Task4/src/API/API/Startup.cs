@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Prometheus;
 
 namespace API
 {
@@ -40,7 +41,10 @@ namespace API
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseAuthorization(); 
+            app.UseMetricServer();
+            app.UseHttpMetrics();
+
 
             app.UseEndpoints(endpoints =>
             {

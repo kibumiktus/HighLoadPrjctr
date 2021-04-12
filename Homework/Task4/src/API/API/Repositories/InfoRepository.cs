@@ -1,25 +1,29 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using API.Cache;
+using System;
 
 namespace API.Repositories
 {
     public class InfoRepository
     {
-        private ApplicationContext _applicationContext;
         private ICache _cache;
+        private IServiceProvider _serviceProvider;
 
-        public InfoRepository(ApplicationContext databaseSettings, ICache cache)
+        public InfoRepository(ICache cache, IServiceProvider serviceProvider)
         {
-            _applicationContext = databaseSettings;
             _cache = cache;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task Store(Info info)
         {
-            _applicationContext.Add(info);
-            await _applicationContext.SaveChangesAsync();
+            ApplicationContext applicationContext = _serviceProvider.GetService<ApplicationContext>();
+
+            applicationContext.Add(info);
+            await applicationContext.SaveChangesAsync();
         }
 
         private object _getCountLocker = new object();
@@ -32,7 +36,9 @@ namespace API.Repositories
             {
                 if ((cached = _cache["Count"]) != null)
                     return (int)cached;
-                var count = _applicationContext.Info.Count();
+                ApplicationContext applicationContext = _serviceProvider.GetService<ApplicationContext>();
+
+                var count = applicationContext.Info.Count();
                 _cache.Add("Count", count);
                 return count;
             }
@@ -48,7 +54,8 @@ namespace API.Repositories
             {
                 if ((cached = _cache["LastElement"]) != null)
                     return (Info)cached;
-                var last = _applicationContext.Info.OrderByDescending(x => x.Created).First();
+                ApplicationContext applicationContext = _serviceProvider.GetService<ApplicationContext>();
+                var last = applicationContext.Info.OrderByDescending(x => x.Created).First();
                 _cache.Add("LastElement", last);
                 return last;
             }
